@@ -18,5 +18,5 @@ import java.util.Map;
  */
 public interface OpinionDao extends BaseDao<Opinion> {
 
-
+    public List<Opinion> findByHolderName(final String holderName);
 }

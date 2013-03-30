@@ -34,4 +34,14 @@ public class OpinionServiceImpl implements OpinionService {
     public Opinion addOpinion(Opinion opinion) throws NotSupportedException {
         return opinionDao.save(opinion);
     }
+
+    @Override
+    public List<Opinion> findAllOpinionsByHolderName(String holderName) throws NotSupportedException {
+        return opinionDao.findByHolderName(holderName);
+    }
+
+    @Override
+    public List<Opinion> findAllOpinionsByEntityName(String entityName) throws NotSupportedException {
+        return null;  //ToDo implement this
+    }
 }

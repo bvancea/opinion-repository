@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class Opinion {
 
-    private long id;
+    private String id;
     private String holder;
     private String entity;
     private String attribute;
@@ -23,11 +23,11 @@ public class Opinion {
     private int position;
     private Date timestamp;
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

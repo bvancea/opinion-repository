@@ -17,4 +17,6 @@ public interface OpinionService {
 
     public List<Opinion> findAllOpinions() throws NotSupportedException;
     public Opinion addOpinion(Opinion opinion) throws NotSupportedException;
+    public List<Opinion> findAllOpinionsByHolderName(String holderName) throws NotSupportedException;
+    public List<Opinion> findAllOpinionsByEntityName(String entityName) throws NotSupportedException;
 }
