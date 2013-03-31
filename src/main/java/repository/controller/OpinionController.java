@@ -32,6 +32,7 @@ public class OpinionController extends TemplateController<Opinion> {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<Opinion> getAll() throws NotSupportedException {
+        System.out.println("HAIIIIIIII THER!!!");
         return opinionService.findAllOpinions();
     }
 
@@ -46,5 +47,7 @@ public class OpinionController extends TemplateController<Opinion> {
     public List<Opinion> findAllByHolder(@PathVariable("holderName") String holderName) throws NotSupportedException {
         return opinionService.findAllOpinionsByHolderName(holderName);
     }
+
+
 
 }
