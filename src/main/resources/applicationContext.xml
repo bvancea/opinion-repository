@@ -15,9 +15,9 @@
 
     <context:property-placeholder location="classpath:hadoop.properties"/>
 
-    <hdp:configuration file-system-uri="${hd.fs}" />
+    <hdp:configuration id="hadoopCconfiguration" file-system-uri="${hd.fs}" />
 
-    <hdp:hbase-configuration zk-quorum="${hbase.host}" zk-port="${hbase.port}"/>
+    <hdp:hbase-configuration configuration-ref="hadoopCconfiguration"  stop-proxy="false" delete-connection="true" zk-quorum="${hbase.host}" zk-port="${hbase.port}" />    <!--"-->
 
     <bean id="hTemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate" p:configuration-ref="hbaseConfiguration"/>
 
