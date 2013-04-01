@@ -13,13 +13,10 @@
         http://www.springframework.org/schema/hadoop/spring-hadoop.xsd">
 
 
-    <context:property-placeholder location="classpath:hadoop.properties"/>
+    <context:component-scan base-package="api"/>
 
-    <hdp:configuration id="hadoopCconfiguration" file-system-uri="${hd.fs}" />
+    <import resource="solr.xml"/>
 
-    <hdp:hbase-configuration configuration-ref="hadoopCconfiguration"  stop-proxy="false" delete-connection="true" zk-quorum="${hbase.host}" zk-port="${hbase.port}" />    <!--"-->
+    <import resource="hbase.xml"/>
 
-    <bean id="hTemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate" p:configuration-ref="hbaseConfiguration"/>
-
-    <context:component-scan base-package="repository"/>
 </beans>

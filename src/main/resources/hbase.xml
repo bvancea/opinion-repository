@@ -9,14 +9,12 @@
 	http://www.springframework.org/schema/hadoop http://www.springframework.org/schema/hadoop/spring-hadoop.xsd">
 
 
-    <context:property-placeholder location="../webapp/WEB-INF/classes/hadoop.properties"/>
+    <context:property-placeholder location="classpath:hadoop.properties"/>
 
-    <hdp:configuration file-system-uri="${hd.fs}" />
+    <hdp:configuration id="hadoopCconfiguration" file-system-uri="${hd.fs}" />
 
-    <hdp:hbase-configuration zk-quorum="${hbase.host}" zk-port="${hbase.port}"/>
+    <hdp:hbase-configuration configuration-ref="hadoopCconfiguration"  stop-proxy="false" delete-connection="true" zk-quorum="${hbase.host}" zk-port="${hbase.port}" />    <!--"-->
 
     <bean id="hTemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate" p:configuration-ref="hbaseConfiguration"/>
-
-    <context:component-scan base-package="org.springframework.data.hadoop.samples.hbase"/>
 
 </beans>

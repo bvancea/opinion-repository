@@ -16,7 +16,7 @@
     <context:annotation-config/>
 
     <!-- Scans the classpath for annotated components that will be auto-registered as Spring beans.-->
-    <context:component-scan base-package="repository"/>
+    <context:component-scan base-package="api"/>
 
     <import resource="classpath:applicationContext.xml"/>
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fields>
+    <!-- Changes to be added to schema.xml for opinion detection -->
+    <field name="holder" type="text_general" indexed="true" stored="true" />
+    <field name="attribute" type="text_general" indexed="true" stored="true" />
+    <field name="entity" type="text_general" indexed="true" stored="true" />
+    <field name="sentimentWord" type="text_general" indexed="true" stored="true" />
+    <field name="sentimentOrientation" type="float" indexed="true" stored="true" />
+    <field name="added_date"  type="date" indexed="true" stored="true"/>
+    <field name="docId" type="string" indexed="true" stored="true" />
+</fields>
