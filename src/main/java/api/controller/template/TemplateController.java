@@ -29,7 +29,6 @@ public abstract class TemplateController<T> {
         return "Operation Not Supported";
     }
 
-
     @ExceptionHandler({ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
@@ -79,12 +78,20 @@ public abstract class TemplateController<T> {
         throw new NotSupportedException();
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void delete(@PathVariable("id") String id) throws EmptyResultDataAccessException, NotSupportedException{
+        throw new NotSupportedException();
+    }
+
     @RequestMapping(value = "/findall", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<T> getAll() throws NotSupportedException{
         throw new NotSupportedException();
     }
+
 
 
 }

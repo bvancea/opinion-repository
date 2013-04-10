@@ -67,8 +67,18 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
     }
 
     @Override
+    public void delete(String id) throws NotSupportedException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public Opinion find(long id) throws NotSupportedException {
         throw new NotSupportedException();
+    }
+
+    @Override
+    public Opinion find(String id) throws NotSupportedException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -98,7 +108,10 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
                 opinion.setSentimentOrientation(Bytes.toDouble(sentimentOrientation));
                 opinion.setPosition(Bytes.toInt(position));
                 opinion.setDocument(Bytes.toString(document));
-                opinion.setTimestamp(new Date(Bytes.toLong(timestamp)));
+
+                if (timestamp != null) {
+                    opinion.setTimestamp(new Date(Bytes.toLong(timestamp)));
+                }
 
                 return opinion;
             }

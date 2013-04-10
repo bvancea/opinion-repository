@@ -12,7 +12,8 @@ import javax.inject.Inject;
  * User: bogdan
  * Date: 3/16/13
  * Time: 10:15 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * Hold hbase configuration and template here.
  */
 @Repository
 public class BasePersistence {
@@ -22,7 +23,5 @@ public class BasePersistence {
 
     @Inject
     protected HbaseTemplate template;
-
-
 
 }

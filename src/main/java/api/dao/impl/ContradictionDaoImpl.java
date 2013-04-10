@@ -29,7 +29,7 @@ public class ContradictionDaoImpl extends BasePersistence implements Contradicti
     private String columnFamilyName;
 
     @Override
-    public Opinion save(Contradiction object) throws NotSupportedException {
+    public Contradiction save(Contradiction object) throws NotSupportedException {
         throw new NotSupportedException();
     }
 
@@ -39,8 +39,18 @@ public class ContradictionDaoImpl extends BasePersistence implements Contradicti
     }
 
     @Override
+    public void delete(String id) throws NotSupportedException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public Contradiction find(long id) throws NotSupportedException {
         throw new NotSupportedException();
+    }
+
+    @Override
+    public Contradiction find(String id) throws NotSupportedException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

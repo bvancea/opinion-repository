@@ -36,8 +36,16 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public Opinion addOpinion(Opinion opinion) throws NotSupportedException {
-        opinionRepository.save(opinion);
+        //opinionRepository.save(opinion);
         return opinionDao.save(opinion);
+    }
+
+    @Override
+    public List<Opinion> addOpinions(List<Opinion> opinions) throws NotSupportedException {
+        for (Opinion opinion : opinions) {
+            opinionDao.save(opinion);
+        }
+        return opinions;
     }
 
     @Override

@@ -1,6 +1,9 @@
 package api.controller;
 
+import api.controller.dto.OpinionsDTO;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -40,9 +43,18 @@ public class OpinionController extends TemplateController<Opinion> {
         return opinionService.addOpinion(record);
     }
 
+    @RequestMapping(value = "/addAll", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<Opinion> addAll(@Valid @RequestBody OpinionsDTO opinions) throws NotSupportedException {
+        return opinionService.addOpinions(opinions);
+    }
+
+
     @RequestMapping(value = "/holder/{holderName}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
+
     public List<Opinion> findAllByHolder(@PathVariable("holderName") String holderName) throws NotSupportedException {
         return opinionService.findAllOpinionsByHolderName(holderName);
     }
