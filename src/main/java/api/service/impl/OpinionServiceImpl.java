@@ -1,14 +1,16 @@
 package api.service.impl;
 
-import api.repository.OpinionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import api.dao.OpinionDao;
 import api.model.Opinion;
+import api.repository.OpinionRepository;
 import api.service.OpinionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.transaction.NotSupportedException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -55,6 +57,10 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public List<Opinion> findAllOpinionsByEntityName(String entityName) throws NotSupportedException {
-        return null;  //ToDo implement this
+        Map<String, Object> filterList = new HashMap<String, Object>();
+        filterList.put("entity",entityName);
+        return opinionDao.filterFind(filterList);
     }
+
+
 }

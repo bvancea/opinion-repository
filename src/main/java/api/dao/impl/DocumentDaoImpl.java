@@ -2,10 +2,15 @@ package api.dao.impl;
 
 import api.dao.DocumentDao;
 import api.dao.base.BasePersistence;
-import api.dao.util.MapperUtil;
+import api.dao.util.DocumentMapper;
 import api.model.Document;
+import api.model.Opinion;
 import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.filter.CompareFilter;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.hadoop.hbase.RowMapper;
 import org.springframework.data.hadoop.hbase.TableCallback;
@@ -15,6 +20,7 @@ import javax.transaction.NotSupportedException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,27 +38,18 @@ public class DocumentDaoImpl extends BasePersistence implements DocumentDao {
     @Value(value = "${document.table.column.familiy.name}")
     private String columnFamilyName;
 
+    @Autowired
+    private DocumentMapper mapper;
+
     @Override
     public Document save(final Document document) throws NotSupportedException {
 
         template.execute(tableName, new TableCallback<Object>() {
             public Object doInTable(HTableInterface table) throws Throwable {
 
-                String rowKey = document.getId();
-                Put p = new Put(Bytes.toBytes(rowKey));
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("docId"),Bytes.toBytes(document.getId()) );
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("title"),Bytes.toBytes(document.getTitle()) );
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("content"),Bytes.toBytes(document.getContent()) );
-
-                if (document.getAddedDate() != null) {
-                    p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("addedDate"),Bytes.toBytes(document.getAddedDate().getTime()));
-                } else {
-                    p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("addedDate"),Bytes.toBytes(Calendar.getInstance().getTimeInMillis()));
-
-                }
-
-                table.put(p);
-                return document;
+            Put p = mapper.mapToPut(document,columnFamilyName);
+            table.put(p);
+            return document;
             }
         });
 
@@ -79,10 +76,10 @@ public class DocumentDaoImpl extends BasePersistence implements DocumentDao {
         Document document = template.execute(tableName, new TableCallback<Document>() {
             @Override
             public Document doInTable(HTableInterface hTableInterface) throws Throwable {
-                Get get = new Get(Bytes.toBytes(id));
-                Result result = hTableInterface.get(get);
+            Get get = new Get(Bytes.toBytes(id));
+            Result result = hTableInterface.get(get);
 
-                return MapperUtil.mapResultToDocument(result, columnFamilyName);
+            return DocumentMapper.mapResultToDocument(result, columnFamilyName);
             }
         });
 
@@ -95,26 +92,37 @@ public class DocumentDaoImpl extends BasePersistence implements DocumentDao {
         return template.find(tableName, columnFamilyName, new RowMapper<Document>() {
             @Override
             public Document mapRow(Result result, int rowNum) throws Exception {
-               /* byte[] docId = result.getValue(Bytes.toBytes(columnFamilyName), Bytes.toBytes("docId"));
-                byte[] title = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("title"));
-                byte[] content = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("content"));
-                byte[] addedDate = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("addedDate"));
-
-                Document document = new Document();
-
-                document.setId(Bytes.toString(docId));
-                document.setTitle(Bytes.toString(title));
-                document.setContent(Bytes.toString(content));
-                document.setAddedDate(new Date(Bytes.toLong(addedDate)));*/
-
-                return MapperUtil.mapResultToDocument(result,columnFamilyName);
+            return mapper.mapFromResult(result, columnFamilyName);
             }
         });
     }
 
     @Override
-    public List<Document> filterFind(Map<String, Object> filter) throws NotSupportedException {
-        throw new NotSupportedException();
+    public List<Document> filterFind(Map<String, Object> filterMap) throws NotSupportedException {
+        Scan scan = new Scan();
+
+        FilterList filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+
+        Set<Map.Entry<String, Object>> filterEntries = filterMap.entrySet();
+        for (Map.Entry entry : filterEntries) {
+            SingleColumnValueFilter filter = new SingleColumnValueFilter(
+                    Bytes.toBytes(columnFamilyName),
+                    Bytes.toBytes(entry.getKey().toString()),
+                    CompareFilter.CompareOp.EQUAL,
+                    Bytes.toBytes(entry.getValue().toString())
+            );
+            filterList.addFilter(filter);
+        }
+
+        scan.setFilter(filterList);
+
+        return template.find(tableName, scan, new RowMapper<Document>() {
+
+            @Override
+            public Document mapRow(Result result, int i) throws Exception {
+                return mapper.mapFromResult(result, columnFamilyName);
+            }
+        });
     }
 
     @Override

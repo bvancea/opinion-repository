@@ -24,4 +24,6 @@ public class BasePersistence {
     @Inject
     protected HbaseTemplate template;
 
+
+
 }

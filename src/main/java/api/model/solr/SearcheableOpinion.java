@@ -14,6 +14,7 @@ public interface SearcheableOpinion {
     String HOLDER_FIELD = "holder";
     String ENTITY_FIELD = "entity";
     String ATTRIBUTE_FIELD = "attribute";
+    String TARGET_FIELD = "target";
     String SENTIMENT_WORD_FIELD = "sentimentWord";
     String ORIENTATION_FIELD = "sentimentOrientation";
     String DATE_FIELD = "date";

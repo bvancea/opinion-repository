@@ -1,8 +1,9 @@
 package api.dao;
 
-import java.util.List;
 import api.dao.base.BaseDao;
 import api.model.Opinion;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

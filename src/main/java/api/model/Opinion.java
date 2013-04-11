@@ -19,10 +19,11 @@ public class Opinion implements SearcheableOpinion {
     @Field(HOLDER_FIELD)
     private String holder;
 
-    @Field(ENTITY_FIELD)
+   /* @Field(ENTITY_FIELD)*/
+    @Field(TARGET_FIELD)
     private String entity;
 
-    @Field(ATTRIBUTE_FIELD)
+    /*@Field(ATTRIBUTE_FIELD)*/
     private String attribute;
 
     @Field(ORIENTATION_FIELD)
@@ -37,7 +38,10 @@ public class Opinion implements SearcheableOpinion {
     @Field(DATE_FIELD)
     private Date timestamp;
 
-    private int position;
+    private int positionSW;
+    private int positionT;
+    private int expanded;
+    private int communitized;
 
 
     public String getId() {
@@ -96,12 +100,36 @@ public class Opinion implements SearcheableOpinion {
         this.document = document;
     }
 
-    public int getPosition() {
-        return position;
+    public int getPositionSW() {
+        return positionSW;
     }
 
-    public void setPosition(int position) {
-        this.position = position;
+    public void setPositionSW(int positionSW) {
+        this.positionSW = positionSW;
+    }
+
+    public int getPositionT() {
+        return positionT;
+    }
+
+    public void setPositionT(int positionT) {
+        this.positionT = positionT;
+    }
+
+    public int getExpanded() {
+        return expanded;
+    }
+
+    public void setExpanded(int expanded) {
+        this.expanded = expanded;
+    }
+
+    public int getCommunitized() {
+        return communitized;
+    }
+
+    public void setCommunitized(int communitized) {
+        this.communitized = communitized;
     }
 
     public Date getTimestamp() {
@@ -111,4 +139,6 @@ public class Opinion implements SearcheableOpinion {
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
+
+
 }

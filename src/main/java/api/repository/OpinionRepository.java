@@ -1,9 +1,9 @@
 package api.repository;
 
 import api.model.Opinion;
-import java.util.List;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.solr.repository.support.SimpleSolrRepository;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

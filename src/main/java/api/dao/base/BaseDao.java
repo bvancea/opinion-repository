@@ -1,10 +1,7 @@
 package api.dao.base;
 
-import api.model.Opinion;
-
-import java.util.List;
-
 import javax.transaction.NotSupportedException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,6 +21,6 @@ public interface BaseDao<T> {
     public T find(long id) throws NotSupportedException;
     public T find(String id) throws NotSupportedException;
     public List<T> findAll() throws NotSupportedException;
-    public List<T> filterFind(Map<String, Object> filter) throws NotSupportedException;
+    public List<T> filterFind(Map<String, Object> filterMap) throws NotSupportedException;
 
 }

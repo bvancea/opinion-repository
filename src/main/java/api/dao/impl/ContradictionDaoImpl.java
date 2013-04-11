@@ -1,11 +1,10 @@
 package api.dao.impl;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
 import api.dao.ContradictionDao;
 import api.dao.base.BasePersistence;
 import api.model.Contradiction;
-import api.model.Opinion;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 
 import javax.transaction.NotSupportedException;
 import java.util.List;

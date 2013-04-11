@@ -1,9 +1,9 @@
 package api.service;
 
-import java.util.List;
 import api.model.Opinion;
 
 import javax.transaction.NotSupportedException;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

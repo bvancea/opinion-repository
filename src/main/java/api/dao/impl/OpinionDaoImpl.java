@@ -1,24 +1,29 @@
 package api.dao.impl;
 
-import java.util.List;
-
+import api.dao.OpinionDao;
+import api.dao.base.BasePersistence;
+import api.dao.util.HBaseMapper;
+import api.dao.util.OpinionMapper;
+import api.model.Opinion;
 import org.apache.hadoop.hbase.client.HTableInterface;
-import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.CompareFilter;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.hadoop.hbase.RowMapper;
 import org.springframework.data.hadoop.hbase.TableCallback;
 import org.springframework.stereotype.Repository;
-import api.dao.OpinionDao;
-import api.dao.base.BasePersistence;
-import api.model.Opinion;
 
 import javax.transaction.NotSupportedException;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,24 +42,15 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
     @Value(value = "${opinion.table.column.familiy.name}")
     private String columnFamilyName;
 
+    @Autowired
+    private OpinionMapper mapper;
+
     @Override
     public Opinion save(final Opinion opinion) throws NotSupportedException {
 
         template.execute(tableName, new TableCallback<Object>() {
             public Object doInTable(HTableInterface table) throws Throwable {
-                long timestamp = Calendar.getInstance().getTimeInMillis();
-                String rowKey = /*timestamp + "-" + */opinion.getHolder() + "-" + opinion.getEntity();
-                Put p = new Put(Bytes.toBytes( rowKey));
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("holder"),Bytes.toBytes(opinion.getHolder()) );
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("entity"),Bytes.toBytes(opinion.getEntity()) );
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("attribute"),Bytes.toBytes(opinion.getAttribute()) );
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("sentiment_word"),Bytes.toBytes(opinion.getSentimentWord()) );
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("sentiment_orientation"),Bytes.toBytes(opinion.getSentimentOrientation()) );
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("position"),Bytes.toBytes(opinion.getPosition()));
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("document"),Bytes.toBytes(opinion.getDocument()));
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("timestamp"),Bytes.toBytes(opinion.getTimestamp().getTime()));
-                table.put(p);
-                return opinion;
+                return mapper.mapToPut(opinion,columnFamilyName);
             }
         });
 
@@ -87,33 +83,7 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
         return template.find(tableName, columnFamilyName, new RowMapper<Opinion>() {
             @Override
             public Opinion mapRow(Result result, int rowNum) throws Exception {
-                byte[] holder = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("holder"));
-                byte[] entity = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("entity"));
-                byte[] attribute = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("attribute"));
-                byte[] sentimentWord = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("sentiment_word"));
-                byte[] sentimentOrientation = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("sentiment_orientation"));
-                byte[] position = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("position"));
-                byte[] document = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("document"));
-                byte[] timestamp = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("timestamp"));
-                byte[] id = result.getRow();
-
-                Opinion opinion = new Opinion();
-
-                opinion.setId(Bytes.toString(id));
-
-                opinion.setHolder(Bytes.toString(holder));
-                opinion.setAttribute(Bytes.toString(attribute));
-                opinion.setEntity(Bytes.toString(entity));
-                opinion.setSentimentWord(Bytes.toString(sentimentWord));
-                opinion.setSentimentOrientation(Bytes.toDouble(sentimentOrientation));
-                opinion.setPosition(Bytes.toInt(position));
-                opinion.setDocument(Bytes.toString(document));
-
-                if (timestamp != null) {
-                    opinion.setTimestamp(new Date(Bytes.toLong(timestamp)));
-                }
-
-                return opinion;
+                return mapper.mapFromResult(result,columnFamilyName);
             }
         });
     }
@@ -134,54 +104,41 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
 
             @Override
             public Opinion mapRow(Result result, int i) throws Exception {
-                byte[] holder = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("holder"));
-                byte[] entity = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("entity"));
-                byte[] attribute = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("attribute"));
-                byte[] sentimentWord = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("sentiment_word"));
-                byte[] sentimentOrientation = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("sentiment_orientation"));
-                byte[] position = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("position"));
-                byte[] document = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("document"));
-                byte[] timestamp = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("timestamp"));
-                byte[] id = result.getRow();
-
-                Opinion opinion = new Opinion();
-
-                opinion.setId(Bytes.toString(id));
-
-                opinion.setHolder(Bytes.toString(holder));
-                opinion.setAttribute(Bytes.toString(attribute));
-                opinion.setEntity(Bytes.toString(entity));
-                opinion.setSentimentWord(Bytes.toString(sentimentWord));
-                opinion.setSentimentOrientation(Bytes.toDouble(sentimentOrientation));
-                opinion.setPosition(Bytes.toInt(position));
-                opinion.setDocument(Bytes.toString(document));
-                opinion.setTimestamp(new Date(Bytes.toLong(timestamp)));
-
-                return opinion;
+            return mapper.mapFromResult(result, columnFamilyName);
             }
         });
-
-        //return null;
     }
 
+
+    /*
+     * I think this only works on strings.
+     */
     @Override
-    public List<Opinion> filterFind(Map<String, Object> filter) throws NotSupportedException {
-        throw new NotSupportedException();
+    public List<Opinion> filterFind(Map<String, Object> filterMap) throws NotSupportedException {
+        Scan scan = new Scan();
+
+        FilterList filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+
+        Set<Map.Entry<String, Object>> filterEntries = filterMap.entrySet();
+        for (Map.Entry entry : filterEntries) {
+            SingleColumnValueFilter filter = new SingleColumnValueFilter(
+                Bytes.toBytes(columnFamilyName),
+                Bytes.toBytes(entry.getKey().toString()),
+                CompareFilter.CompareOp.EQUAL,
+                Bytes.toBytes(entry.getValue().toString())
+            );
+            filterList.addFilter(filter);
+        }
+
+        scan.setFilter(filterList);
+
+        return template.find(tableName, scan, new RowMapper<Opinion>() {
+
+            @Override
+            public Opinion mapRow(Result result, int i) throws Exception {
+            return mapper.mapFromResult(result, columnFamilyName);
+            }
+        });
     }
 
-    //@PostConstruct
-    public void doStuff() throws NotSupportedException {
-        List<Opinion> results = findAll();
-        Opinion opinion = new Opinion();
-        opinion.setDocument("Alexandra loves Starbucks hot chocolate and coffee.");
-        opinion.setHolder("Alexandra");
-        opinion.setEntity("coffee");
-        opinion.setAttribute("taste");
-        opinion.setPosition(1);
-
-        opinion.setSentimentWord("loves");
-        opinion.setSentimentOrientation(0.99);
-        opinion.setTimestamp(Calendar.getInstance().getTime());
-        this.save(opinion);
-    }
 }

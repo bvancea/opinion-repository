@@ -2,7 +2,6 @@ package api.controller;
 
 import api.controller.template.TemplateController;
 import api.model.Document;
-import api.model.Opinion;
 import api.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
