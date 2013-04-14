@@ -1,5 +1,6 @@
 package repository.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.hbase.client.HTableInterface;
@@ -21,6 +22,7 @@ import javax.transaction.NotSupportedException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import org.apache.hadoop.hbase.KeyValue;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,7 +34,13 @@ import java.util.Map;
  */
 @Repository
 public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
-
+    
+    @Value(value = "${opinionExpansionPrefix}")
+    private String expansionPrefix;
+    
+    @Value(value = "${splitToken}")
+    private String splitToken;
+    
     @Value(value = "${opinion.table.name}")
     private String tableName;
 
@@ -46,16 +54,19 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
             public Object doInTable(HTableInterface table) throws Throwable {
                 long timestamp = Calendar.getInstance().getTimeInMillis();
                 String rowKey = /*timestamp + "-" + */opinion.getHolder() + "-" + opinion.getEntity();
+                String opinionKey = "O:" + opinion.getEntity() + "+" + opinion.getId();
+                String opinionValue = ""+opinion.getSentimentOrientation() + "+" +
+                                        opinion.getSentimentWord() + "+" +
+                                        opinion.getDocument() + "+" +
+                                        opinion.getPositionSW() + "+" +
+                                        opinion.getPositionT() + "+" +
+                                        //opinion.getExpandedFlag() + "+" +
+                                        //opinion.getCommunitizedFlag() + "+" +
+                                        opinion.getTimestamp();
                 Put p = new Put(Bytes.toBytes( rowKey));
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("holder"),Bytes.toBytes(opinion.getHolder()) );
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("entity"),Bytes.toBytes(opinion.getEntity()) );
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("attribute"),Bytes.toBytes(opinion.getAttribute()) );
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("sentiment_word"),Bytes.toBytes(opinion.getSentimentWord()) );
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("sentiment_orientation"),Bytes.toBytes(opinion.getSentimentOrientation()) );
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("position"),Bytes.toBytes(opinion.getPosition()));
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("document"),Bytes.toBytes(opinion.getDocument()));
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("timestamp"),Bytes.toBytes(opinion.getTimestamp().getTime()));
-                table.put(p);
+                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("Expanded"),Bytes.toBytes(""+opinion.getExpanded()));
+                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("Communitized"),Bytes.toBytes(""+opinion.getCommunitized()));
+                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes(opinionKey),Bytes.toBytes(opinionValue));
                 return opinion;
             }
         });
@@ -79,34 +90,66 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
         return template.find(tableName, columnFamilyName, new RowMapper<Opinion>() {
             @Override
             public Opinion mapRow(Result result, int rowNum) throws Exception {
-                byte[] holder = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("holder"));
-                byte[] entity = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("entity"));
-                byte[] attribute = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("attribute"));
-                byte[] sentimentWord = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("sentiment_word"));
-                byte[] sentimentOrientation = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("sentiment_orientation"));
-                byte[] position = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("position"));
-                byte[] document = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("document"));
-                byte[] timestamp = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("timestamp"));
-                byte[] id = result.getRow();
 
                 Opinion opinion = new Opinion();
-
-                opinion.setId(Bytes.toString(id));
-
-                opinion.setHolder(Bytes.toString(holder));
-                opinion.setAttribute(Bytes.toString(attribute));
-                opinion.setEntity(Bytes.toString(entity));
-                opinion.setSentimentWord(Bytes.toString(sentimentWord));
-                opinion.setSentimentOrientation(Bytes.toDouble(sentimentOrientation));
-                opinion.setPosition(Bytes.toInt(position));
-                opinion.setDocument(Bytes.toString(document));
-                opinion.setTimestamp(new Date(Bytes.toLong(timestamp)));
-
+               
+                String rowKey = Bytes.toString(result.getRow());
+                String[] keySplit = rowKey.split(splitToken);
+                opinion.setHolder(keySplit[0]);
+                opinion.setEntity(keySplit[1]);
+                byte[] expandedBytes = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("Expanded"));
+                byte[] communitizedBytes = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("Communitized"));
+                
+                int expandedInt = Integer.parseInt(Bytes.toString(expandedBytes));
+                int communitizedInt = Integer.parseInt(Bytes.toString(communitizedBytes));
+                opinion.setExpanded(expandedInt);
+                opinion.setCommunitized(communitizedInt);
+                
+                List<Opinion> expandedOpinions = new ArrayList<Opinion>();
+                
+                List<KeyValue> list = result.list();
+                for (KeyValue kv: list) {
+                    Opinion opinionEx = new Opinion();
+                    String columnQ = Bytes.toString(kv.getQualifier());
+                    if(columnQ.startsWith(expansionPrefix)){
+                        String opKey = columnQ.substring(expansionPrefix.length());
+                        String[] opKeySplit = opKey.split(splitToken);
+                        opinionEx.setId(opKeySplit[1]);
+                        opinionEx.setEntity(opKeySplit[0]);
+                        
+                        String opValue = Bytes.toString(kv.getValue());
+                        String[] opValueSplit = opValue.split(splitToken);
+                        opinionEx.setSentimentOrientation(Double.parseDouble(opValueSplit[0]));
+                        opinionEx.setSentimentWord(opValueSplit[1]);
+                        opinionEx.setDocument(opValueSplit[2]);
+                        opinionEx.setPositionSW(Integer.parseInt(opValueSplit[3]));
+                        opinionEx.setPositionT(Integer.parseInt(opValueSplit[4]));
+                        Date timestamp = new Date(Long.parseLong(opValueSplit[5]));
+                        opinionEx.setTimestamp(timestamp);
+                        
+                        expandedOpinions.add(opinionEx);
+                        
+                        //if the nested opinion is the original opinion
+                        // get values from nested to original
+                        if(opinionEx.getEntity().equals(opinion.getEntity())){
+                            opinion.setId(opinionEx.getId());
+                            opinion.setSentimentOrientation(opinionEx.getSentimentOrientation());
+                            opinion.setSentimentWord(opinionEx.getSentimentWord());
+                            opinion.setDocument(opinionEx.getDocument());
+                            opinion.setPositionSW(opinionEx.getPositionSW());
+                            opinion.setPositionT(opinionEx.getPositionT());
+                            opinion.setTimestamp(opinionEx.getTimestamp());
+                        }  
+                    }
+                }
+                
+                opinion.setExpandedOpinions(expandedOpinions);
+                
                 return opinion;
             }
         });
     }
-
+    
     public List<Opinion> findByHolderName(final String holderName) {
         Scan scan = new Scan();
 
@@ -142,9 +185,17 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
                 opinion.setEntity(Bytes.toString(entity));
                 opinion.setSentimentWord(Bytes.toString(sentimentWord));
                 opinion.setSentimentOrientation(Bytes.toDouble(sentimentOrientation));
-                opinion.setPosition(Bytes.toInt(position));
+                opinion.setPositionSW(Bytes.toInt(position));
                 opinion.setDocument(Bytes.toString(document));
                 opinion.setTimestamp(new Date(Bytes.toLong(timestamp)));
+                
+                String rowKey = Bytes.toString(result.getRow());
+                List<KeyValue> list = result.list();
+                for (KeyValue kv: list) {
+                    String opKey = Bytes.toString(kv.getQualifier());
+                    String opValue = Bytes.toString(kv.getValue());
+                    //p("row: "+rowKey+ ", opKey: "+ opKey + " opValue: " + opValue);
+                }
 
                 return opinion;
             }
@@ -166,7 +217,7 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
         opinion.setHolder("Alexandra");
         opinion.setEntity("coffee");
         opinion.setAttribute("taste");
-        opinion.setPosition(1);
+        opinion.setPositionSW(1);
 
         opinion.setSentimentWord("loves");
         opinion.setSentimentOrientation(0.99);

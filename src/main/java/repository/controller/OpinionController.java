@@ -35,7 +35,8 @@ public class OpinionController extends TemplateController<Opinion> {
         System.out.println("HAIIIIIIII THER!!!");
         return opinionService.findAllOpinions();
     }
-
+    
+    
     @Override
     public Opinion add(@Valid @RequestBody Opinion record) throws NotSupportedException {
         return opinionService.addOpinion(record);

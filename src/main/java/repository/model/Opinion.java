@@ -1,6 +1,7 @@
 package repository.model;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,87 +12,134 @@ import java.util.Date;
  */
 public class Opinion {
 
+
     private String id;
+
     private String holder;
+
     private String entity;
+
     private String attribute;
+
     private Double sentimentOrientation;
+
     private String sentimentWord;
 
-    //ToDo add JCR support/alternatives
-    private String document;
-    private int position;
+    private String document;       //ToDo add JCR support/alternatives
+
     private Date timestamp;
+
+    private int positionSW;
+    private int positionT;
+    private int expanded;
+    private int communitized;
+    
+    private List<Opinion> expandedOpinions;
 
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getHolder() {
         return holder;
     }
 
-    public void setHolder(String holder) {
-        this.holder = holder;
-    }
-
     public String getEntity() {
         return entity;
-    }
-
-    public void setEntity(String entity) {
-        this.entity = entity;
     }
 
     public String getAttribute() {
         return attribute;
     }
 
-    public void setAttribute(String attribute) {
-        this.attribute = attribute;
-    }
-
     public Double getSentimentOrientation() {
         return sentimentOrientation;
-    }
-
-    public void setSentimentOrientation(Double sentimentOrientation) {
-        this.sentimentOrientation = sentimentOrientation;
     }
 
     public String getSentimentWord() {
         return sentimentWord;
     }
 
-    public void setSentimentWord(String sentimentWord) {
-        this.sentimentWord = sentimentWord;
-    }
-
     public String getDocument() {
         return document;
-    }
-
-    public void setDocument(String document) {
-        this.document = document;
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
     }
 
     public Date getTimestamp() {
         return timestamp;
     }
 
+    public int getPositionSW() {
+        return positionSW;
+    }
+
+    public int getPositionT() {
+        return positionT;
+    }
+
+    public int getExpanded() {
+        return expanded;
+    }
+
+    public int getCommunitized() {
+        return communitized;
+    }
+
+    public List<Opinion> getExpandedOpinions() {
+        return expandedOpinions;
+    }
+
+    public void setExpandedOpinions(List<Opinion> expandedOpinions) {
+        this.expandedOpinions = expandedOpinions;
+    }
+
+        
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setHolder(String holder) {
+        this.holder = holder;
+    }
+
+    public void setEntity(String entity) {
+        this.entity = entity;
+    }
+
+    public void setAttribute(String attribute) {
+        this.attribute = attribute;
+    }
+
+    public void setSentimentOrientation(Double sentimentOrientation) {
+        this.sentimentOrientation = sentimentOrientation;
+    }
+
+    public void setSentimentWord(String sentimentWord) {
+        this.sentimentWord = sentimentWord;
+    }
+
+    public void setDocument(String document) {
+        this.document = document;
+    }
+
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
+
+    public void setPositionSW(int positionSW) {
+        this.positionSW = positionSW;
+    }
+
+    public void setPositionT(int positionT) {
+        this.positionT = positionT;
+    }
+
+    public void setExpanded(int expanded) {
+        this.expanded = expanded;
+    }
+
+    public void setCommunitized(int communitized) {
+        this.communitized = communitized;
+    }
+
+    
 }

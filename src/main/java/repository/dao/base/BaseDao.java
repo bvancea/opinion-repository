@@ -1,9 +1,6 @@
 package repository.dao.base;
 
-import repository.model.AOpinion;
-
 import java.util.List;
-
 import javax.transaction.NotSupportedException;
 import java.util.Map;
 
