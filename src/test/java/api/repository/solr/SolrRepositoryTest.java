@@ -58,7 +58,7 @@ public class SolrRepositoryTest {
         String sentimentWord = TestConstants.sentimentWords[random.nextInt(TestConstants.sentimentWords.length)];
 
         int pos = random.nextInt(1024);
-        double sentimentOrientation = random.nextDouble();
+        Float sentimentOrientation = random.nextFloat();
 
         opinion.setId(id);
         opinion.setDocument(docId);

@@ -1,7 +1,9 @@
 package api.repository;
 
 import api.model.Opinion;
+import org.springframework.data.domain.Page;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
 
@@ -10,13 +12,16 @@ import java.util.List;
  * User: bogdan
  * Date: 4/2/13
  * Time: 1:42 AM
- * To change this template use File | Settings | File Templates.
+ *
  */
-public interface OpinionRepository extends CrudRepository<Opinion, String> {
+public interface OpinionRepository extends PagingAndSortingRepository<Opinion, String> {
 
     public List<Opinion> findByHolderLike(String holder);
+
     public List<Opinion> findByEntityLike(String entity);
-    public List<Opinion> findByAttributeLike(String attribute);
+
+    public List<Opinion> findByHolderAndEntityLike(String holder, String target);
+
     public List<Opinion> findBySentimentWordLike(String sentimentWord);
     public List<Opinion> findBySentimentOrientation(Float senimentOrientation);
 

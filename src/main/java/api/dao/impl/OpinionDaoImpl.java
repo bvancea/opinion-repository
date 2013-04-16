@@ -6,6 +6,7 @@ import api.dao.util.HBaseMapper;
 import api.dao.util.OpinionMapper;
 import api.model.Opinion;
 import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.CompareFilter;
@@ -50,7 +51,9 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
 
         template.execute(tableName, new TableCallback<Object>() {
             public Object doInTable(HTableInterface table) throws Throwable {
-                return mapper.mapToPut(opinion,columnFamilyName);
+                Put put = mapper.mapToPut(opinion,columnFamilyName);
+                table.put(put);
+                return opinion;
             }
         });
 

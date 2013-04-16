@@ -38,7 +38,7 @@ public class OpinionMapper implements HBaseMapper<Opinion> {
         String entityString = (entity == null)?null:Bytes.toString(entity);
         String attributeString = (entity == null)?null:Bytes.toString(attribute);
         String sentimentWordString = (sentimentWord == null)?null:Bytes.toString(sentimentWord);
-        Double sentimentOrientationDouble = (sentimentOrientation == null)?0:Bytes.toDouble(sentimentOrientation);
+        Float sentimentOrientationDouble = (sentimentOrientation == null)?0:Bytes.toFloat(sentimentOrientation);
         Integer positionSWInt = (positionSW == null)? -1:Bytes.toInt(positionSW);
         Integer positionTInt = (positionSW == null)? -1:Bytes.toInt(positionT);
         Integer cummunitizedInt = (positionSW == null)? -1:Bytes.toInt(communitized);
