@@ -19,4 +19,6 @@ import java.util.Map;
 public interface OpinionDao extends BaseDao<Opinion> {
 
     public List<Opinion> findByHolderName(final String holderName);
+    public List<Opinion> findByHolderAndTarget(final String holderName, final String targetEntity);
+    public Opinion findById(final String id);
 }

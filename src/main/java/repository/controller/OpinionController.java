@@ -48,6 +48,21 @@ public class OpinionController extends TemplateController<Opinion> {
     public List<Opinion> findAllByHolder(@PathVariable("holderName") String holderName) throws NotSupportedException {
         return opinionService.findAllOpinionsByHolderName(holderName);
     }
+    
+    @RequestMapping(value = "/holder/{holderName}/target/{targetEntity}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<Opinion> findAllByHolderAndtarget(@PathVariable("holderName") String holderName, 
+        @PathVariable("targetEntity") String targetEntity) throws NotSupportedException {
+        return opinionService.findAllOpinionsByHolderAndTarget(holderName, targetEntity);
+    }
+    
+    @RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Opinion findById(@PathVariable("id") String id) throws NotSupportedException {
+        return opinionService.findById(id);
+    }
 
 
 

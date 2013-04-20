@@ -33,8 +33,6 @@ public class Opinion {
     private int positionT;
     private int expanded;
     private int communitized;
-    
-    private List<Opinion> expandedOpinions;
 
     public String getId() {
         return id;
@@ -83,16 +81,7 @@ public class Opinion {
     public int getCommunitized() {
         return communitized;
     }
-
-    public List<Opinion> getExpandedOpinions() {
-        return expandedOpinions;
-    }
-
-    public void setExpandedOpinions(List<Opinion> expandedOpinions) {
-        this.expandedOpinions = expandedOpinions;
-    }
-
-        
+  
     public void setId(String id) {
         this.id = id;
     }
@@ -140,6 +129,5 @@ public class Opinion {
     public void setCommunitized(int communitized) {
         this.communitized = communitized;
     }
-
-    
+  
 }

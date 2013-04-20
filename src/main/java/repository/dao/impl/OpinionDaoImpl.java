@@ -23,6 +23,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.filter.ColumnRangeFilter;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.springframework.beans.factory.annotation.Autowired;
+import repository.dao.util.OpinionMapper;
+import repository.dao.util.OpinionResultMapper;
+import repository.model.OpinionResult;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,38 +41,40 @@ import org.apache.hadoop.hbase.KeyValue;
 @Repository
 public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
     
-    @Value(value = "${opinionExpansionPrefix}")
-    private String expansionPrefix;
+    @Value(value = "${opinionPrefix}")
+    private String opinionPrefix;
+    
+    @Value(value = "${opinionIdSearchPrefix}")
+    private String opinionIdSearchPrefix;
     
     @Value(value = "${splitToken}")
     private String splitToken;
+    
+    @Value(value = "${concatToken}")
+    private String concatToken;
     
     @Value(value = "${opinion.table.name}")
     private String tableName;
 
     @Value(value = "${opinion.table.column.familiy.name}")
     private String columnFamilyName;
+    
+    @Autowired
+    private OpinionMapper mapper;
+    
+    @Autowired
+    private OpinionResultMapper resultmapper;
 
     @Override
     public Opinion save(final Opinion opinion) throws NotSupportedException {
-
+        //generate id
+        String id = "ID" + Calendar.getInstance().getTimeInMillis();
+        
+        opinion.setId(id);
         template.execute(tableName, new TableCallback<Object>() {
             public Object doInTable(HTableInterface table) throws Throwable {
-                long timestamp = Calendar.getInstance().getTimeInMillis();
-                String rowKey = /*timestamp + "-" + */opinion.getHolder() + "-" + opinion.getEntity();
-                String opinionKey = "O:" + opinion.getEntity() + "+" + opinion.getId();
-                String opinionValue = ""+opinion.getSentimentOrientation() + "+" +
-                                        opinion.getSentimentWord() + "+" +
-                                        opinion.getDocument() + "+" +
-                                        opinion.getPositionSW() + "+" +
-                                        opinion.getPositionT() + "+" +
-                                        //opinion.getExpandedFlag() + "+" +
-                                        //opinion.getCommunitizedFlag() + "+" +
-                                        opinion.getTimestamp();
-                Put p = new Put(Bytes.toBytes( rowKey));
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("Expanded"),Bytes.toBytes(""+opinion.getExpanded()));
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes("Communitized"),Bytes.toBytes(""+opinion.getCommunitized()));
-                p.add(Bytes.toBytes(columnFamilyName), Bytes.toBytes(opinionKey),Bytes.toBytes(opinionValue));
+                Put p = mapper.mapToPut(opinion, columnFamilyName);
+                table.put(p);
                 return opinion;
             }
         });
@@ -86,68 +94,21 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
 
     @Override
     public List<Opinion> findAll() throws NotSupportedException {
-
-        return template.find(tableName, columnFamilyName, new RowMapper<Opinion>() {
+        
+        List<Opinion> opinions = new ArrayList<Opinion>();
+        List<OpinionResult> opinionResults =  template.find(tableName, columnFamilyName, new RowMapper<OpinionResult>() {
             @Override
-            public Opinion mapRow(Result result, int rowNum) throws Exception {
-
-                Opinion opinion = new Opinion();
+            public OpinionResult mapRow(Result result, int rowNum) throws Exception {
                
-                String rowKey = Bytes.toString(result.getRow());
-                String[] keySplit = rowKey.split(splitToken);
-                opinion.setHolder(keySplit[0]);
-                opinion.setEntity(keySplit[1]);
-                byte[] expandedBytes = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("Expanded"));
-                byte[] communitizedBytes = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("Communitized"));
-                
-                int expandedInt = Integer.parseInt(Bytes.toString(expandedBytes));
-                int communitizedInt = Integer.parseInt(Bytes.toString(communitizedBytes));
-                opinion.setExpanded(expandedInt);
-                opinion.setCommunitized(communitizedInt);
-                
-                List<Opinion> expandedOpinions = new ArrayList<Opinion>();
-                
-                List<KeyValue> list = result.list();
-                for (KeyValue kv: list) {
-                    Opinion opinionEx = new Opinion();
-                    String columnQ = Bytes.toString(kv.getQualifier());
-                    if(columnQ.startsWith(expansionPrefix)){
-                        String opKey = columnQ.substring(expansionPrefix.length());
-                        String[] opKeySplit = opKey.split(splitToken);
-                        opinionEx.setId(opKeySplit[1]);
-                        opinionEx.setEntity(opKeySplit[0]);
-                        
-                        String opValue = Bytes.toString(kv.getValue());
-                        String[] opValueSplit = opValue.split(splitToken);
-                        opinionEx.setSentimentOrientation(Double.parseDouble(opValueSplit[0]));
-                        opinionEx.setSentimentWord(opValueSplit[1]);
-                        opinionEx.setDocument(opValueSplit[2]);
-                        opinionEx.setPositionSW(Integer.parseInt(opValueSplit[3]));
-                        opinionEx.setPositionT(Integer.parseInt(opValueSplit[4]));
-                        Date timestamp = new Date(Long.parseLong(opValueSplit[5]));
-                        opinionEx.setTimestamp(timestamp);
-                        
-                        expandedOpinions.add(opinionEx);
-                        
-                        //if the nested opinion is the original opinion
-                        // get values from nested to original
-                        if(opinionEx.getEntity().equals(opinion.getEntity())){
-                            opinion.setId(opinionEx.getId());
-                            opinion.setSentimentOrientation(opinionEx.getSentimentOrientation());
-                            opinion.setSentimentWord(opinionEx.getSentimentWord());
-                            opinion.setDocument(opinionEx.getDocument());
-                            opinion.setPositionSW(opinionEx.getPositionSW());
-                            opinion.setPositionT(opinionEx.getPositionT());
-                            opinion.setTimestamp(opinionEx.getTimestamp());
-                        }  
-                    }
-                }
-                
-                opinion.setExpandedOpinions(expandedOpinions);
-                
-                return opinion;
+                return resultmapper.mapFromResult(result, columnFamilyName);
             }
         });
+        
+        for(OpinionResult opr : opinionResults){
+            opinions.addAll(opr.getOpinions());
+        }
+        
+        return opinions;
     }
     
     public List<Opinion> findByHolderName(final String holderName) {
@@ -162,47 +123,85 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
         scan.setStartRow(startRow);
         scan.setStopRow(stopRow);
 
-        return template.find(tableName, scan, new RowMapper<Opinion>() {
+        List<Opinion> opinions = new ArrayList<Opinion>();
+        List<OpinionResult> opinionResults = template.find(tableName, scan, new RowMapper<OpinionResult>() {
 
             @Override
-            public Opinion mapRow(Result result, int i) throws Exception {
-                byte[] holder = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("holder"));
-                byte[] entity = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("entity"));
-                byte[] attribute = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("attribute"));
-                byte[] sentimentWord = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("sentiment_word"));
-                byte[] sentimentOrientation = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("sentiment_orientation"));
-                byte[] position = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("position"));
-                byte[] document = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("document"));
-                byte[] timestamp = result.getValue(Bytes.toBytes(columnFamilyName),Bytes.toBytes("timestamp"));
-                byte[] id = result.getRow();
+            public OpinionResult mapRow(Result result, int rowNum) throws Exception {
 
-                Opinion opinion = new Opinion();
-
-                opinion.setId(Bytes.toString(id));
-
-                opinion.setHolder(Bytes.toString(holder));
-                opinion.setAttribute(Bytes.toString(attribute));
-                opinion.setEntity(Bytes.toString(entity));
-                opinion.setSentimentWord(Bytes.toString(sentimentWord));
-                opinion.setSentimentOrientation(Bytes.toDouble(sentimentOrientation));
-                opinion.setPositionSW(Bytes.toInt(position));
-                opinion.setDocument(Bytes.toString(document));
-                opinion.setTimestamp(new Date(Bytes.toLong(timestamp)));
-                
-                String rowKey = Bytes.toString(result.getRow());
-                List<KeyValue> list = result.list();
-                for (KeyValue kv: list) {
-                    String opKey = Bytes.toString(kv.getQualifier());
-                    String opValue = Bytes.toString(kv.getValue());
-                    //p("row: "+rowKey+ ", opKey: "+ opKey + " opValue: " + opValue);
-                }
-
-                return opinion;
+                return resultmapper.mapFromResult(result, columnFamilyName);
             }
         });
-
-        //return null;
+        
+        for(OpinionResult opr : opinionResults){
+            opinions.addAll(opr.getOpinions());
+        }
+        
+        return opinions;
     }
+    
+    @Override
+    public List<Opinion> findByHolderAndTarget(String holderName, String targetEntity) {
+        Scan scan = new Scan();
+
+        byte[] startRow = Bytes.toBytes(holderName);
+        byte[] stopRow = Bytes.toBytes(holderName);
+        stopRow[stopRow.length-1]++;
+
+        scan.addFamily(Bytes.toBytes(columnFamilyName));
+        scan.setStartRow(Bytes.toBytes(holderName));
+        scan.setStartRow(startRow);
+        scan.setStopRow(stopRow);
+        
+        byte[] startColumn = Bytes.toBytes(""+opinionPrefix+targetEntity);
+        byte[] endColumn = Bytes.toBytes(""+opinionPrefix+targetEntity);
+        endColumn[endColumn.length-1]++;
+        
+        Filter f = new ColumnRangeFilter(startColumn , true, endColumn, false);
+        scan.setFilter(f);
+        
+        List<Opinion> opinions = new ArrayList<Opinion>();
+        List<OpinionResult> opinionResults = template.find(tableName, scan, new RowMapper<OpinionResult>() {
+
+            @Override
+            public OpinionResult mapRow(Result result, int rowNum) throws Exception {
+
+                return resultmapper.mapFromResult(result, columnFamilyName);
+            }
+        });
+        
+        for(OpinionResult opr : opinionResults){
+            opinions.addAll(opr.getOpinions());
+        }
+        
+        return opinions;
+    }
+    
+    @Override
+    public Opinion findById(String id) {
+        Scan scan = new Scan();
+        
+        byte[] startColumn = Bytes.toBytes(""+opinionIdSearchPrefix+id);
+        byte[] endColumn = Bytes.toBytes(""+opinionIdSearchPrefix+id);
+        endColumn[endColumn.length-1]++;
+        
+        Filter f = new ColumnRangeFilter(startColumn , true, endColumn, false);
+        scan.setFilter(f);
+        
+        
+        List<Opinion> opinions = template.find(tableName, scan, new RowMapper<Opinion>() {
+
+            @Override
+            public Opinion mapRow(Result result, int rowNum) throws Exception {
+
+                return mapper.mapFromResult(result, columnFamilyName);
+            }
+        });
+        return opinions.get(0);
+        
+
+    }
+
 
     @Override
     public List<Opinion> filterFind(Map<String, Object> filter) throws NotSupportedException {
@@ -224,4 +223,7 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
         opinion.setTimestamp(Calendar.getInstance().getTime());
         this.save(opinion);
     }
+
+    
+    
 }

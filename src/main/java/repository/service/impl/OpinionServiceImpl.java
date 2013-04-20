@@ -39,9 +39,19 @@ public class OpinionServiceImpl implements OpinionService {
     public List<Opinion> findAllOpinionsByHolderName(String holderName) throws NotSupportedException {
         return opinionDao.findByHolderName(holderName);
     }
+    
+    @Override
+    public List<Opinion> findAllOpinionsByHolderAndTarget(String holderName, String targetEntity) throws NotSupportedException {
+        return opinionDao.findByHolderAndTarget(holderName, targetEntity);
+    }
 
     @Override
     public List<Opinion> findAllOpinionsByEntityName(String entityName) throws NotSupportedException {
         return null;  //ToDo implement this
+    }
+
+    @Override
+    public Opinion findById(String id) throws NotSupportedException {
+        return opinionDao.findById(id);
     }
 }
