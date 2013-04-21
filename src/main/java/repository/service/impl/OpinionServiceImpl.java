@@ -1,5 +1,7 @@
 package repository.service.impl;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.dao.OpinionDao;
@@ -8,6 +10,8 @@ import repository.service.OpinionService;
 
 import javax.transaction.NotSupportedException;
 import java.util.List;
+import repository.controller.dto.OpinionQueryExDTO;
+import repository.model.OpinionResult;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,7 +36,47 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public Opinion addOpinion(Opinion opinion) throws NotSupportedException {
+        //generate id
+        String id = "ID" + Calendar.getInstance().getTimeInMillis();  
+        opinion.setId(id);
+        
         return opinionDao.save(opinion);
+    }
+    
+    @Override
+    public List<Opinion> addOpinions(List<Opinion> opinions) throws NotSupportedException {
+        
+        for (Opinion opinion : opinions) {
+            //generate id
+            String id = "ID" + opinions.indexOf(opinion) +Calendar.getInstance().getTimeInMillis();  
+            opinion.setId(id);
+            opinionDao.save(opinion);
+        }
+        return opinions;
+    }
+    
+    @Override
+    public List<Opinion> addExpandedOpinions(OpinionQueryExDTO opinionsExpansion) throws NotSupportedException{
+        
+        OpinionResult opinionResult = new OpinionResult();
+        
+        Opinion originalOpinion = opinionsExpansion.getOriginalOpinion();
+        
+        opinionResult.setEntity(originalOpinion.getEntity());
+        opinionResult.setHolder(originalOpinion.getHolder());
+        
+        ArrayList<Opinion> opinions = new ArrayList<Opinion>();
+        
+        opinions.add(originalOpinion);
+        opinions.addAll(opinionsExpansion.getExpandedOpinions());
+        
+        opinionResult.setOpinions(opinions);
+                
+        for (Opinion opinion : opinionResult.getOpinions()) {
+            opinion.setExpanded(1);
+        }
+        opinionDao.saveOpinionResult(opinionResult);
+        return opinionResult.getOpinions();
     }
 
     @Override
@@ -52,6 +96,19 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public Opinion findById(String id) throws NotSupportedException {
-        return opinionDao.findById(id);
+        return opinionDao.find(id);
+    }
+
+    @Override
+    public List<Opinion> findAllUnexpanded() throws NotSupportedException {
+        List<Opinion> allOpinions = findAllOpinions();
+        List<Opinion> unexpandedOpinions = new ArrayList<Opinion>(); 
+        for(Opinion opinion : allOpinions){
+            if(opinion.getExpanded() == 0){
+                unexpandedOpinions.add(opinion);
+            }
+        }
+        
+        return unexpandedOpinions;
     }
 }

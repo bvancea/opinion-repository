@@ -33,6 +33,16 @@ public class OpinionResult {
     public void setOpinions(List<Opinion> Opinions) {
         this.opinions = Opinions;
     }
+    
+    public Opinion getOriginalOpinion(){
+        for(Opinion o : opinions){
+            if(o.getEntity().equals(entity)){
+                return o;
+            }
+        }
+        
+        return null;
+    }
 
     @Override
     public String toString() {

@@ -9,7 +9,6 @@ package repository.dao.util;
  * @author Alex Marchis
  */
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import org.apache.hadoop.hbase.KeyValue;
@@ -19,7 +18,6 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import repository.model.Opinion;
-import repository.model.OpinionResult;
 
 
 

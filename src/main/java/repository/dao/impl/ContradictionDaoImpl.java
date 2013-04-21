@@ -39,8 +39,18 @@ public class ContradictionDaoImpl extends BasePersistence implements Contradicti
     }
 
     @Override
+    public void delete(String id) throws NotSupportedException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public Contradiction find(long id) throws NotSupportedException {
         throw new NotSupportedException();
+    }
+
+    @Override
+    public Contradiction find(String id) throws NotSupportedException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

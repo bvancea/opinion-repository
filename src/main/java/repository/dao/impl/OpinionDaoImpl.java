@@ -67,10 +67,6 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
 
     @Override
     public Opinion save(final Opinion opinion) throws NotSupportedException {
-        //generate id
-        String id = "ID" + Calendar.getInstance().getTimeInMillis();
-        
-        opinion.setId(id);
         template.execute(tableName, new TableCallback<Object>() {
             public Object doInTable(HTableInterface table) throws Throwable {
                 Put p = mapper.mapToPut(opinion, columnFamilyName);
@@ -81,10 +77,28 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
 
         return opinion;
     }
+    
+    @Override
+    public OpinionResult saveOpinionResult(final OpinionResult opinionResult){
+        template.execute(tableName, new TableCallback<Object>() {
+            public Object doInTable(HTableInterface table) throws Throwable {
+                Put p = resultmapper.mapToPut(opinionResult, columnFamilyName);
+                table.put(p);
+                return opinionResult;
+            }
+        });
+
+        return opinionResult;
+    }
 
     @Override
     public void delete(Opinion object) throws NotSupportedException {
         throw new NotSupportedException();
+    }
+    
+    @Override
+    public void delete(String id) throws NotSupportedException {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -95,8 +109,17 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
     @Override
     public List<Opinion> findAll() throws NotSupportedException {
         
+        Scan scan = new Scan();
+        
+        byte[] startColumn = Bytes.toBytes(""+opinionPrefix);
+        byte[] endColumn = Bytes.toBytes(""+opinionPrefix);
+        endColumn[endColumn.length-1]++;
+        
+        Filter f = new ColumnRangeFilter(startColumn , true, endColumn, false);
+        scan.setFilter(f);
+        
         List<Opinion> opinions = new ArrayList<Opinion>();
-        List<OpinionResult> opinionResults =  template.find(tableName, columnFamilyName, new RowMapper<OpinionResult>() {
+        List<OpinionResult> opinionResults =  template.find(tableName, scan, new RowMapper<OpinionResult>() {
             @Override
             public OpinionResult mapRow(Result result, int rowNum) throws Exception {
                
@@ -122,6 +145,13 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
         scan.setStartRow(Bytes.toBytes(holderName));
         scan.setStartRow(startRow);
         scan.setStopRow(stopRow);
+        
+        byte[] startColumn = Bytes.toBytes(""+opinionPrefix);
+        byte[] endColumn = Bytes.toBytes(""+opinionPrefix);
+        endColumn[endColumn.length-1]++;
+        
+        Filter f = new ColumnRangeFilter(startColumn , true, endColumn, false);
+        scan.setFilter(f);
 
         List<Opinion> opinions = new ArrayList<Opinion>();
         List<OpinionResult> opinionResults = template.find(tableName, scan, new RowMapper<OpinionResult>() {
@@ -178,7 +208,7 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
     }
     
     @Override
-    public Opinion findById(String id) {
+    public Opinion find(String id) {
         Scan scan = new Scan();
         
         byte[] startColumn = Bytes.toBytes(""+opinionIdSearchPrefix+id);
@@ -189,17 +219,21 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
         scan.setFilter(f);
         
         
-        List<Opinion> opinions = template.find(tableName, scan, new RowMapper<Opinion>() {
+        List<OpinionResult> opinionResults = template.find(tableName, scan, new RowMapper<OpinionResult>() {
 
             @Override
-            public Opinion mapRow(Result result, int rowNum) throws Exception {
+            public OpinionResult mapRow(Result result, int rowNum) throws Exception {
 
-                return mapper.mapFromResult(result, columnFamilyName);
+                return resultmapper.mapFromResult(result, columnFamilyName);
             }
         });
-        return opinions.get(0);
         
-
+        Opinion originalOpinion = null;
+        
+        for(OpinionResult opr : opinionResults){
+            originalOpinion = opr.getOriginalOpinion(); 
+        }
+        return originalOpinion;
     }
 
 

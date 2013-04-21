@@ -7,6 +7,7 @@ import repository.model.Opinion;
 
 import javax.transaction.NotSupportedException;
 import java.util.Map;
+import repository.model.OpinionResult;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,7 +19,8 @@ import java.util.Map;
  */
 public interface OpinionDao extends BaseDao<Opinion> {
 
+    public OpinionResult saveOpinionResult(final OpinionResult opinionResult);
     public List<Opinion> findByHolderName(final String holderName);
     public List<Opinion> findByHolderAndTarget(final String holderName, final String targetEntity);
-    public Opinion findById(final String id);
+    //public Opinion findById(final String id);
 }

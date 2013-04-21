@@ -4,6 +4,9 @@ import java.util.List;
 import repository.model.Opinion;
 
 import javax.transaction.NotSupportedException;
+import repository.controller.dto.OpinionQueryExDTO;
+import repository.controller.dto.OpinionsDTO;
+import repository.model.OpinionResult;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,8 +20,13 @@ public interface OpinionService {
 
     public List<Opinion> findAllOpinions() throws NotSupportedException;
     public Opinion addOpinion(Opinion opinion) throws NotSupportedException;
+    public List<Opinion> addOpinions(List<Opinion> opinions) throws NotSupportedException;
+    public List<Opinion> addExpandedOpinions(OpinionQueryExDTO opinionsExpansion) throws NotSupportedException;
     public List<Opinion> findAllOpinionsByHolderName(String holderName) throws NotSupportedException;
     public List<Opinion> findAllOpinionsByHolderAndTarget(String holderName, String targetEntity) throws NotSupportedException;
     public List<Opinion> findAllOpinionsByEntityName(String entityName) throws NotSupportedException;
     public Opinion findById(String id) throws NotSupportedException;
+    public List<Opinion> findAllUnexpanded() throws NotSupportedException;
+
+    
 }

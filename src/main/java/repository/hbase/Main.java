@@ -15,6 +15,7 @@
  */
 package repository.hbase;
 
+import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -22,6 +23,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 import repository.dao.OpinionDao;
 import javax.transaction.NotSupportedException;
+import repository.model.Opinion;
+import repository.model.OpinionResult;
 
 /**
  * WordCount startup class.
@@ -39,18 +42,42 @@ import javax.transaction.NotSupportedException;
  */
 @Component
 public class Main {
-
+    
     @Autowired
     static OpinionDao opinionDao;
 
 	private static final String[] CONFIGS = new String[] { "applicationContext.xml" };
 
 	public static void main(String[] args) throws NotSupportedException {
+                /*
 		String[] res = (args != null && args.length > 0 ? args : CONFIGS);
 		AbstractApplicationContext ctx = new ClassPathXmlApplicationContext(res);
 		// shutdown the context along with the VM
-
+                
 
         ctx.registerShutdownHook();
+        */
+            
+            Opinion original = new Opinion();
+            original.setEntity("oentity");
+            Opinion expanded = new Opinion();
+            expanded.setEntity("eentity");
+            
+            OpinionResult or = new OpinionResult();
+            or.setEntity("oentity");
+            ArrayList<Opinion> opinions = new ArrayList<Opinion>();
+            opinions.add(expanded);
+            opinions.add(original);
+            or.setOpinions(opinions);
+            Opinion originalresult = or.getOriginalOpinion();
+            
+            if(originalresult != null){
+                System.out.println("Bun");
+            } else {
+                System.out.println("Rau");
+            }
 	}
+        
+   
+    
 }

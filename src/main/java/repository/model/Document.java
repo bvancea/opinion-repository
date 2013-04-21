@@ -1,23 +1,30 @@
 package repository.model;
 
-/**
- * Created with IntelliJ IDEA.
- * User: bogdan
- * Date: 3/25/13
- * Time: 10:46 PM
- * To change this template use File | Settings | File Templates.
- */
+import java.util.Date;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Document {
 
-    private String documentId;
+    private String id;
     private String content;
+    private String title;
+    private Date addedDate;
 
-    public String getDocumentId() {
-        return documentId;
+    public Date getAddedDate() {
+        return addedDate;
     }
 
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
+    public void setAddedDate(Date addedDate) {
+        this.addedDate = addedDate;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getContent() {
@@ -26,5 +33,13 @@ public class Document {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

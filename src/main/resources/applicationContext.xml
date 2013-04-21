@@ -14,24 +14,20 @@
         http://www.springframework.org/schema/hadoop/spring-hadoop.xsd
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
-
-    
-    <!--  
-            Enables automatic mapping of fund objects to and from JSON  
-      -->  
-    <mvc:annotation-driven/>  
-    
     
   
-    <context:property-placeholder location="classpath:hadoop.properties"/>
-
-    <hdp:configuration id="hadoopCconfiguration" file-system-uri="${hd.fs}" />
-
-    <hdp:hbase-configuration configuration-ref="hadoopCconfiguration"  stop-proxy="false" delete-connection="true" zk-quorum="${hbase.host}" zk-port="${hbase.port}" />    <!--"-->
-
-    <bean id="hTemplate" class="org.springframework.data.hadoop.hbase.HbaseTemplate" p:configuration-ref="hbaseConfiguration"/>
+   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:hbase.properties</value>
+                <value>classpath:hadoop.properties</value>
+            </list>
+        </property>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
 
     <context:component-scan base-package="repository"/>
     
+    <import resource="hbase.xml"/>
      
 </beans>
