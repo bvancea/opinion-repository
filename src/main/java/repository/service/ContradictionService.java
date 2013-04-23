@@ -16,5 +16,5 @@ import java.util.List;
 public interface ContradictionService {
 
     public List<Contradiction> findAllContradictions() throws NotSupportedException;
-    public Opinion addContradiction(Contradiction contradiction) throws NotSupportedException;
+    public Contradiction addContradiction(Contradiction contradiction) throws NotSupportedException;
 }

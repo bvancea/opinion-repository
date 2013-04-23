@@ -37,4 +37,10 @@ public class Contradiction {
     public void setContradictionType(int contradictionType) {
         this.contradictionType = contradictionType;
     }
+    
+    public void invertOpinionIDs(){
+        String auxid = firstOpinionId;
+        firstOpinionId = secondOpinionId;
+        secondOpinionId = auxid;
+    }
 }

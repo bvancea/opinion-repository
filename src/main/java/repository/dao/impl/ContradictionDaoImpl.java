@@ -1,15 +1,22 @@
 package repository.dao.impl;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
-import repository.dao.ContradictionDao;
-import repository.dao.base.BasePersistence;
-import repository.model.Contradiction;
-import repository.model.Opinion;
-
-import javax.transaction.NotSupportedException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.transaction.NotSupportedException;
+import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.hadoop.hbase.RowMapper;
+import org.springframework.data.hadoop.hbase.TableCallback;
+import org.springframework.stereotype.Repository;
+import repository.controller.dto.ContradictionsDTO;
+import repository.dao.ContradictionDao;
+import repository.dao.base.BasePersistence;
+import repository.dao.util.ContradictionMapper;
+import repository.model.Contradiction;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,16 +28,37 @@ import java.util.Map;
  */
 @Repository
 public class ContradictionDaoImpl extends BasePersistence implements ContradictionDao {
+    
+    @Value(value = "${contradiction.table.opinion.CF.name}")
+    private String opinionCFamily;
+    
 
     @Value(value = "${contradiction.table.name}")
     private String tableName;
-
-    @Value(value = "${contradiction.table.column.familiy.name}")
-    private String columnFamilyName;
+    
+    @Autowired
+    private ContradictionMapper mapper;
 
     @Override
-    public Contradiction save(Contradiction object) throws NotSupportedException {
-        throw new NotSupportedException();
+    public Contradiction save(final Contradiction contradiction) throws NotSupportedException {
+        template.execute(tableName, new TableCallback<Contradiction>() {
+            public Contradiction doInTable(HTableInterface table) throws Throwable {
+
+            Put p = mapper.mapToPut(contradiction,opinionCFamily);
+            table.put(p);
+            
+            contradiction.invertOpinionIDs();
+            
+            p = mapper.mapToPut(contradiction,opinionCFamily);
+            table.put(p);
+            
+            contradiction.invertOpinionIDs();
+            
+            return contradiction;
+            }
+        });
+
+        return contradiction;
     }
 
     @Override
@@ -55,7 +83,20 @@ public class ContradictionDaoImpl extends BasePersistence implements Contradicti
 
     @Override
     public List<Contradiction> findAll() throws NotSupportedException {
-        throw new NotSupportedException();
+        List<Contradiction> finalResult = new ArrayList<Contradiction>();
+        List<ContradictionsDTO> contradictionResults;
+        contradictionResults = template.find(tableName, opinionCFamily, new RowMapper<ContradictionsDTO>() {
+            @Override
+            public ContradictionsDTO mapRow(Result result, int rowNum) throws Exception {
+                return mapper.mapListFromResult(result, opinionCFamily);
+            }
+        });
+        
+        for(ContradictionsDTO contradictionResult : contradictionResults){
+            finalResult.addAll(contradictionResult);
+        }
+        
+        return finalResult;
     }
 
     @Override

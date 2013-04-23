@@ -44,8 +44,6 @@ public class OpinionMapper implements HBaseMapper<Opinion> {
         String[] keySplit = rowKey.split(splitToken);
         opinion.setHolder(keySplit[0]);
 
-        List<Opinion> opinions = new ArrayList<Opinion>();
-
         List<KeyValue> list = result.list();
         for (KeyValue kv: list) {
             String columnQ = Bytes.toString(kv.getQualifier());
