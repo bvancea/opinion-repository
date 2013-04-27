@@ -13,6 +13,7 @@
             <list>
                 <value>classpath:solr.properties</value>
                 <value>classpath:hadoop.properties</value>
+                <value>classpath:hbase.properties</value>
             </list>
         </property>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
