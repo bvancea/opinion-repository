@@ -9,11 +9,11 @@ package api.model.util;
  */
 public class ContradictionConstants {
 
-    public static final long SUSPECTED = 1;
+    public static final int SUSPECTED = 1;
 
-    public static final long CONFIRMED = 2;
+    public static final int CONFIRMED = 2;
 
-    public static final long COMMUNITY = 3;
+    public static final int COMMUNITY = 3;
 
     //ToDo add more types of contradictions
 }

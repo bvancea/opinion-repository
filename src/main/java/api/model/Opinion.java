@@ -1,7 +1,9 @@
 package api.model;
 
 import api.model.solr.SearcheableOpinion;
+import java.util.List;
 import org.apache.solr.client.solrj.beans.Field;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import java.util.Date;
 
@@ -11,6 +13,7 @@ import java.util.Date;
  * Date: 3/16/13
  * Time: 8:54 PM
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Opinion implements SearcheableOpinion {
 
     @Field(ID_FIELD)
@@ -34,6 +37,18 @@ public class Opinion implements SearcheableOpinion {
 
     @Field(DOCUMENT_FIELD)
     private String document;       //ToDo add JCR support/alternatives
+
+    @Field(TARGET_EXPANSIONS_FIELD)
+    private List<String> targetExpansions;
+
+    @Field(TARGET_EXPANSIONS_WEIGHTS_FIELD)
+    private List<Float> targetExpansionWeights;
+
+    @Field(SENTIMENT_WORD_EXPANSIONS_FIELD)
+    private List<String> sentimentWordExpansions;
+
+    @Field(SENTIMENT_WORD_EXPANSIONS_WEIGHTS_FIELD)
+    private List<Float> sentimentWordExpansionWeights;
 
     @Field(DATE_FIELD)
     private Date timestamp;
@@ -140,5 +155,35 @@ public class Opinion implements SearcheableOpinion {
         this.timestamp = timestamp;
     }
 
+    public List<String> getTargetExpansions() {
+        return targetExpansions;
+    }
 
+    public void setTargetExpansions(List<String> targetExpansions) {
+        this.targetExpansions = targetExpansions;
+    }
+
+    public List<Float> getTargetExpansionWeights() {
+        return targetExpansionWeights;
+    }
+
+    public void setTargetExpansionWeights(List<Float> targetExpansionWeights) {
+        this.targetExpansionWeights = targetExpansionWeights;
+    }
+
+    public List<String> getSentimentWordExpansions() {
+        return sentimentWordExpansions;
+    }
+
+    public void setSentimentWordExpansions(List<String> sentimentWordExpansions) {
+        this.sentimentWordExpansions = sentimentWordExpansions;
+    }
+
+    public List<Float> getSentimentWordExpansionWeights() {
+        return sentimentWordExpansionWeights;
+    }
+
+    public void setSentimentWordExpansionWeights(List<Float> sentimentWordExpansionWeights) {
+        this.sentimentWordExpansionWeights = sentimentWordExpansionWeights;
+    }
 }
