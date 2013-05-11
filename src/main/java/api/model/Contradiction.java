@@ -1,5 +1,7 @@
 package api.model;
 
+import java.util.Date;
+
 /**
  * Created with IntelliJ IDEA.
  * User: bogdan
@@ -12,6 +14,7 @@ public class Contradiction {
     private String firstOpinionId;
     private String secondOpinionId;
     private int contradictionType;
+    private Date timestamp;
 
 
     public String getFirstOpinionId() {
@@ -34,8 +37,16 @@ public class Contradiction {
         return contradictionType;
     }
 
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
     public void setContradictionType(int contradictionType) {
         this.contradictionType = contradictionType;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
     
     public void invertOpinionIDs(){
