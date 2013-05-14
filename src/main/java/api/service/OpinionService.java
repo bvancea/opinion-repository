@@ -5,8 +5,6 @@ import api.model.Opinion;
 
 import javax.transaction.NotSupportedException;
 import api.controller.dto.OpinionQueryExDTO;
-import api.controller.dto.OpinionsDTO;
-import api.model.OpinionResult;
 
 /**
  * Created with IntelliJ IDEA.

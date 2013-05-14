@@ -16,13 +16,9 @@ import api.dao.OpinionDao;
 import api.dao.base.BasePersistence;
 import api.model.Opinion;
 
-import javax.annotation.PostConstruct;
-import javax.swing.*;
 import javax.transaction.NotSupportedException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.filter.ColumnRangeFilter;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;

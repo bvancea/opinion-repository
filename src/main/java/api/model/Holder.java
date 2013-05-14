@@ -16,7 +16,6 @@ public class Holder {
     private int gender;
     private String religion;
     private String location;
-    private String communityID;
     
     private List<HolderRelationship> relationships;
 
@@ -44,10 +43,6 @@ public class Holder {
         return location;
     }
 
-    public String getCommunityID() {
-        return communityID;
-    }
-
     public List<HolderRelationship> getRelationships() {
         return relationships;
     }
@@ -70,10 +65,6 @@ public class Holder {
 
     public void setLocation(String location) {
         this.location = location;
-    }
-
-    public void setCommunityID(String communityID) {
-        this.communityID = communityID;
     }
 
     public void setRelationships(List<HolderRelationship> relationships) {
