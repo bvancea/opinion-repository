@@ -1,5 +1,6 @@
 package api.service.impl;
 
+import api.dao.CommunityContradictionDao;
 import api.model.Contradiction;
 import api.model.Opinion;
 import api.service.ContradictionService;
@@ -9,6 +10,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import api.dao.ContradictionDao;
+import api.model.CommunityContradiction;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,6 +25,9 @@ public class ContradictionServiceImpl implements ContradictionService {
     @Autowired
     private ContradictionDao contradictionDao;
     
+    @Autowired
+    private CommunityContradictionDao communityContradictionDao;
+    
     @Override
     public List<Contradiction> findAllContradictions() throws NotSupportedException {
         return contradictionDao.findAll();
@@ -32,4 +37,14 @@ public class ContradictionServiceImpl implements ContradictionService {
     public Contradiction addContradiction(Contradiction contradiction) throws NotSupportedException {
         return contradictionDao.save(contradiction);
     }
+
+    @Override
+    public List<CommunityContradiction> findAllCommunityContradictions() throws NotSupportedException {
+        return communityContradictionDao.findAll();
+    }
+
+    @Override
+    public CommunityContradiction addCommunityContradiction(CommunityContradiction contradiction) throws NotSupportedException {
+        return communityContradictionDao.save(contradiction); 
+   }
 }

@@ -15,7 +15,9 @@ import org.springframework.stereotype.Repository;
 import api.controller.dto.ContradictionsDTO;
 import api.dao.ContradictionDao;
 import api.dao.base.BasePersistence;
+import api.dao.util.CommunityContradictionMapper;
 import api.dao.util.ContradictionMapper;
+import api.model.CommunityContradiction;
 import api.model.Contradiction;
 
 /**
@@ -31,14 +33,14 @@ public class ContradictionDaoImpl extends BasePersistence implements Contradicti
     
     @Value(value = "${contradiction.table.opinion.CF.name}")
     private String opinionCFamily;
-    
+       
 
     @Value(value = "${contradiction.table.name}")
     private String tableName;
     
     @Autowired
     private ContradictionMapper mapper;
-
+    
     @Override
     public Contradiction save(final Contradiction contradiction) throws NotSupportedException {
         template.execute(tableName, new TableCallback<Contradiction>() {
