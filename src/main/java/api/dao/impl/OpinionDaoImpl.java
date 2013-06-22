@@ -173,7 +173,28 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
         
         return opinions;
     }
-    
+
+        @Override
+        public List<Opinion> save(final Iterable<Opinion> opinions) {
+
+            template.execute(tableName, new TableCallback<Object>() {
+                public Object doInTable(HTableInterface table) throws Throwable {
+                    List<Put> puts = new ArrayList<Put>();
+
+                    for (Opinion opinion : opinions) {
+                        Put put = mapper.mapToPut(opinion,columnFamilyName);
+                        puts.add(put);
+                    }
+
+                    table.put(puts);
+                    return opinions;
+                }
+            });
+
+            return (List) opinions;
+        }
+
+
     @Override
     public List<Opinion> findByHolderAndTarget(String holderName, String targetEntity) {
         Scan scan = new Scan();
@@ -272,22 +293,5 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
         });
     }
 
-    //@PostConstruct
-    public void doStuff() throws NotSupportedException {
-        List<Opinion> results = findAll();
-        Opinion opinion = new Opinion();
-        opinion.setDocument("Alexandra loves Starbucks hot chocolate and coffee.");
-        opinion.setHolder("Alexandra");
-        opinion.setEntity("coffee");
-        opinion.setAttribute("taste");
-        opinion.setPositionSW(1);
-
-        opinion.setSentimentWord("loves");
-        opinion.setSentimentOrientation(0.99);
-        opinion.setTimestamp(Calendar.getInstance().getTime());
-        this.save(opinion);
-    }
-
-    
     
 }

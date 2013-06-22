@@ -1,7 +1,9 @@
-package repository.service;
+package api.service;
 
 import java.util.List;
-import repository.model.Opinion;
+
+import api.controller.dto.OpinionQueryExDTO;
+import api.model.Opinion;
 
 import javax.transaction.NotSupportedException;
 
@@ -16,6 +18,10 @@ import javax.transaction.NotSupportedException;
 public interface OpinionService {
 
     public List<Opinion> findAllOpinions() throws NotSupportedException;
+
+    public Opinion addOrUpdateOpinion(Opinion opinion) throws NotSupportedException;
+    public List<Opinion> addOrUpdateOpinions(List<Opinion> opinions) throws NotSupportedException;
+
     public Opinion addOpinion(Opinion opinion) throws NotSupportedException;
     public List<Opinion> addOpinions(List<Opinion> opinions) throws NotSupportedException;
     public List<Opinion> addExpandedOpinions(OpinionQueryExDTO opinionsExpansion) throws NotSupportedException;

@@ -1,4 +1,6 @@
-package repository.model;
+package api.model;
+
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,6 +14,7 @@ public class Contradiction {
     private String firstOpinionId;
     private String secondOpinionId;
     private int contradictionType;
+    private Date timestamp;
 
 
     public String getFirstOpinionId() {
