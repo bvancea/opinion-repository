@@ -16,4 +16,5 @@ import java.util.List;
 public interface OpinionDao extends BaseDao<Opinion> {
 
     public List<Opinion> findByHolderName(final String holderName);
+    public List<Opinion> save(Iterable<Opinion> opinions);
 }

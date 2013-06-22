@@ -186,4 +186,13 @@ public class Opinion implements SearcheableOpinion {
     public void setSentimentWordExpansionWeights(List<Float> sentimentWordExpansionWeights) {
         this.sentimentWordExpansionWeights = sentimentWordExpansionWeights;
     }
+
+    @Override
+    public String toString() {
+        return "Opinion{" +
+                "holder='" + holder + '\'' +
+                ", entity='" + entity + '\'' +
+                ", attribute='" + attribute + '\'' +
+                '}';
+    }
 }

@@ -38,14 +38,14 @@ public class OpinionController extends TemplateController<Opinion> {
 
     @Override
     public Opinion add(@Valid @RequestBody Opinion record) throws NotSupportedException {
-        return opinionService.addOpinion(record);
+        return opinionService.addOrUpdateOpinion(record);
     }
 
     @RequestMapping(value = "/addAll", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<Opinion> addAll(@Valid @RequestBody OpinionsDTO opinions) throws NotSupportedException {
-        return opinionService.addOpinions(opinions);
+        return opinionService.addOrUpdateOpinions(opinions);
     }
 
 

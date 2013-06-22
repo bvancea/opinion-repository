@@ -21,10 +21,7 @@ import org.springframework.data.hadoop.hbase.TableCallback;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.NotSupportedException;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -110,6 +107,26 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
             return mapper.mapFromResult(result, columnFamilyName);
             }
         });
+    }
+
+    @Override
+    public List<Opinion> save(final Iterable<Opinion> opinions) {
+
+        template.execute(tableName, new TableCallback<Object>() {
+            public Object doInTable(HTableInterface table) throws Throwable {
+                List<Put> puts = new ArrayList<Put>();
+
+                for (Opinion opinion : opinions) {
+                    Put put = mapper.mapToPut(opinion,columnFamilyName);
+                    puts.add(put);
+                }
+
+                table.put(puts);
+                return opinions;
+            }
+        });
+
+        return (List) opinions;
     }
 
 

@@ -3,11 +3,13 @@ package api.controller;
 import api.controller.template.TemplateController;
 import api.model.Opinion;
 import api.repository.OpinionRepository;
+import api.service.ExpansionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import shared.model.ExpansionsSet;
 
 import javax.transaction.NotSupportedException;
 import java.util.List;
@@ -26,6 +28,9 @@ public class IndexedOpinionController extends TemplateController<Opinion> {
     //ToDo create a service for solr repository access if business logic gets complicated
     @Autowired
     private OpinionRepository solrOpinionRepository;
+
+    @Autowired
+    private ExpansionsService expansionsService;
 
     @RequestMapping(value = "/findall", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
@@ -55,5 +60,15 @@ public class IndexedOpinionController extends TemplateController<Opinion> {
                                                   @PathVariable("target") String target  ) throws NotSupportedException {
         return solrOpinionRepository.findByHolderAndEntityLike(holderName, target);
     }
+
+    @RequestMapping(value = "/expansion/", method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<Opinion> updateTargetExpansions(@RequestBody ExpansionsSet expansionsSet) {
+
+        return expansionsService.updateExpansions(expansionsSet);
+    }
+
+
 
 }

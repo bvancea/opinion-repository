@@ -37,13 +37,13 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public Opinion addOpinion(Opinion opinion) throws NotSupportedException {
+    public Opinion addOrUpdateOpinion(Opinion opinion) throws NotSupportedException {
         //opinionRepository.save(opinion);
         return opinionDao.save(opinion);
     }
 
-    @Override
-    public List<Opinion> addOpinions(List<Opinion> opinions) throws NotSupportedException {
+   @Override
+    public List<Opinion> addOrUpdateOpinions(List<Opinion> opinions) throws NotSupportedException {
         for (Opinion opinion : opinions) {
             opinionDao.save(opinion);
         }
