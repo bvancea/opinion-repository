@@ -5,14 +5,15 @@
 package api.controller.dto;
 
 import java.util.ArrayList;
-import api.model.Opinion;
+import api.model.Contradiction;
+
 
 /**
  *
  * @author Alex Marchis
  */
-public class OpinionsDTO extends ArrayList<Opinion> {
-     public OpinionsDTO() {
+public class ContradictionsDTO extends ArrayList<Contradiction>{
+    public ContradictionsDTO() {
         super();
     }
 }

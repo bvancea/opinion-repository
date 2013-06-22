@@ -1,17 +1,8 @@
 package api.model;
 
+import java.util.Date;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-import java.util.Date;
-
-/**
- * Created with IntelliJ IDEA.
- * User: bogdan
- * Date: 3/25/13
- * Time: 10:46 PM
- *
- *
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Document {
 

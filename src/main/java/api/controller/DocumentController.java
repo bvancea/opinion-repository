@@ -1,8 +1,6 @@
+
 package api.controller;
 
-import api.controller.template.TemplateController;
-import api.model.Document;
-import api.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -12,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.NotSupportedException;
 import javax.validation.Valid;
 import java.util.List;
+import api.controller.template.TemplateController;
+import api.model.Document;
+import api.service.DocumentService;
 
 /**
  * Created with IntelliJ IDEA.
@@ -50,7 +51,5 @@ public class DocumentController extends TemplateController<Document>{
     public void delete(@PathVariable("id") String id) throws EmptyResultDataAccessException, NotSupportedException{
         documentService.deleteById(id);
     }
-
-
 
 }

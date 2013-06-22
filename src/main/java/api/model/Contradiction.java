@@ -1,4 +1,4 @@
-package api.model;
+package repository.model;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,7 +34,21 @@ public class Contradiction {
         return contradictionType;
     }
 
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
     public void setContradictionType(int contradictionType) {
         this.contradictionType = contradictionType;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+    
+    public void invertOpinionIDs(){
+        String auxid = firstOpinionId;
+        firstOpinionId = secondOpinionId;
+        secondOpinionId = auxid;
     }
 }

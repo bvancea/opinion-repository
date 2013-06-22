@@ -5,11 +5,13 @@
 package api.dao;
 
 import api.dao.base.BaseDao;
-import api.model.Document;
+import api.model.Community;
+import java.util.List;
 
 /**
  *
  * @author Alex Marchis
  */
-public interface DocumentDao extends BaseDao<Document>{    
+public interface CommunityDao extends BaseDao<Community> {
+    public List<Community> findByHolderName(final String holderName);
 }

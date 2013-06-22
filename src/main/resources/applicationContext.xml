@@ -24,5 +24,4 @@
     <import resource="solr.xml"/>
 
     <import resource="hbase.xml"/>
-
 </beans>

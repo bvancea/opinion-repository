@@ -1,21 +1,21 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package api.service.impl;
 
-import api.dao.DocumentDao;
-import api.model.Document;
-import api.service.DocumentService;
+import java.util.List;
+import javax.transaction.NotSupportedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.transaction.NotSupportedException;
-import java.util.List;
+import api.dao.DocumentDao;
+import api.model.Document;
+import api.service.DocumentService;
 
 /**
- * Created with IntelliJ IDEA.
- * User: bogdan
- * Date: 4/10/13
- * Time: 12:51 PM
  *
+ * @author Alex Marchis
  */
 @Service
 @Transactional

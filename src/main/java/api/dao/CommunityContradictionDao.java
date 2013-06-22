@@ -5,11 +5,12 @@
 package api.dao;
 
 import api.dao.base.BaseDao;
-import api.model.Document;
+import api.model.CommunityContradiction;
 
 /**
  *
  * @author Alex Marchis
  */
-public interface DocumentDao extends BaseDao<Document>{    
+public interface CommunityContradictionDao extends BaseDao<CommunityContradiction>{
+    
 }

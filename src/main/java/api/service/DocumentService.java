@@ -1,18 +1,17 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package api.service;
 
+import java.util.List;
+import javax.transaction.NotSupportedException;
 import api.model.Document;
 
-import javax.transaction.NotSupportedException;
-import java.util.List;
-
 /**
- * Created with IntelliJ IDEA.
- * User: bogdan
- * Date: 4/10/13
- * Time: 12:50 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author Alex Marchis
  */
-
 public interface DocumentService {
 
     public List<Document> findAll() throws NotSupportedException;

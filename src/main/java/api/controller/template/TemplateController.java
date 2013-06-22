@@ -6,8 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import api.util.ValidationException;
 
 import javax.transaction.NotSupportedException;
+import java.util.List;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -28,6 +30,7 @@ public abstract class TemplateController<T> {
     public String handleNotSupported(Exception ex) {
         return "Operation Not Supported";
     }
+
 
     @ExceptionHandler({ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -91,7 +94,6 @@ public abstract class TemplateController<T> {
     public List<T> getAll() throws NotSupportedException{
         throw new NotSupportedException();
     }
-
 
 
 }

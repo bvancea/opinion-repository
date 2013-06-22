@@ -1,10 +1,10 @@
+
 package api.dao.impl;
 
-import api.dao.DocumentDao;
-import api.dao.base.BasePersistence;
-import api.dao.util.DocumentMapper;
-import api.model.Document;
-import api.model.Opinion;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.transaction.NotSupportedException;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.FilterList;
@@ -15,12 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.hadoop.hbase.RowMapper;
 import org.springframework.data.hadoop.hbase.TableCallback;
 import org.springframework.stereotype.Repository;
-
-import javax.transaction.NotSupportedException;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import api.dao.DocumentDao;
+import api.dao.base.BasePersistence;
+import api.dao.util.DocumentMapper;
+import api.model.Document;
 
 /**
  * Created with IntelliJ IDEA.
