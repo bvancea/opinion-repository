@@ -16,10 +16,11 @@ import java.util.List;
  */
 public interface OpinionDao extends BaseDao<Opinion> {
 
-    public List<Opinion> findByHolderName(final String holderName);
     public List<Opinion> save(Iterable<Opinion> opinions);
 
-    OpinionResult saveOpinionResult(OpinionResult opinionResult);
-
-    List<Opinion> findByHolderAndTarget(String holderName, String targetEntity);
+    public OpinionResult saveOpinionResult(final OpinionResult opinionResult);
+    public Opinion saveInIdTable(final Opinion opinion);
+    public List<Opinion> findByHolderName(final String holderName);
+    public List<Opinion> findByHolderAndTarget(final String holderName, final String targetEntity);
+    public List<Opinion> findUnexpanded();
 }

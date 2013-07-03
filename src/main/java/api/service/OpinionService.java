@@ -31,5 +31,6 @@ public interface OpinionService {
     public Opinion findById(String id) throws NotSupportedException;
     public List<Opinion> findAllUnexpanded() throws NotSupportedException;
 
-    
+
+    Opinion addExpansions(Opinion opinion) throws NotSupportedException;
 }

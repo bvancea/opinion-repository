@@ -31,7 +31,7 @@ public class Opinion implements SearcheableOpinion {
     private String attribute;
 
     @Field(ORIENTATION_FIELD)
-    private Float sentimentOrientation;
+    private Double sentimentOrientation;
 
     @Field(SENTIMENT_WORD_FIELD)
     private String sentimentWord;
@@ -92,11 +92,11 @@ public class Opinion implements SearcheableOpinion {
         this.attribute = attribute;
     }
 
-    public Float getSentimentOrientation() {
+    public Double getSentimentOrientation() {
         return sentimentOrientation;
     }
 
-    public void setSentimentOrientation(Float sentimentOrientation) {
+    public void setSentimentOrientation(Double sentimentOrientation) {
         this.sentimentOrientation = sentimentOrientation;
     }
 

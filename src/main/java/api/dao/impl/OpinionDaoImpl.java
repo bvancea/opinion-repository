@@ -44,25 +44,35 @@ import api.model.OpinionResult;
  */
 @Repository
 public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
-    
+
+    @Value(value = "${targetPrefix}")
+    private String targetPrefix;
+
+    @Value(value = "${sentimentPrefix}")
+    private String sentimentPrefix;
+
     @Value(value = "${opinionPrefix}")
     private String opinionPrefix;
-    
+
     @Value(value = "${opinionIdSearchPrefix}")
     private String opinionIdSearchPrefix;
-    
+
     @Value(value = "${splitToken}")
     private String splitToken;
-    
+
     @Value(value = "${concatToken}")
     private String concatToken;
-    
+
     @Value(value = "${opinion.table.name}")
     private String tableName;
 
-    @Value(value = "${opinion.table.column.familiy.name}")
+    @Value(value = "${opinion.id.table.name}")
+    private String idTableName;
+
+    @Value(value = "${opinion.table.column.family.name}")
     private String columnFamilyName;
-    
+
+
     @Autowired
     private OpinionMapper mapper;
     
@@ -81,7 +91,20 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
 
         return opinion;
     }
-    
+
+    @Override
+    public Opinion saveInIdTable(final Opinion opinion) {
+        template.execute(idTableName, new TableCallback<Object>() {
+            public Object doInTable(HTableInterface table) throws Throwable {
+                Put p = mapper.mapToIdPut(opinion, columnFamilyName);
+                table.put(p);
+                return opinion;
+            }
+        });
+
+        return opinion;
+    }
+
     @Override
     public OpinionResult saveOpinionResult(final OpinionResult opinionResult){
         template.execute(tableName, new TableCallback<Object>() {
@@ -113,27 +136,21 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
     @Override
     public List<Opinion> findAll() throws NotSupportedException {
         
-        Scan scan = new Scan();
+       /* Scan scan = new Scan();
         
-        byte[] startColumn = Bytes.toBytes(""+opinionPrefix);
-        byte[] endColumn = Bytes.toBytes(""+opinionPrefix);
+        byte[] startColumn = Bytes.toBytes(""+ opinionPrefix);
+        byte[] endColumn = Bytes.toBytes(""+ opinionPrefix);
         endColumn[endColumn.length-1]++;
         
         Filter f = new ColumnRangeFilter(startColumn , true, endColumn, false);
-        scan.setFilter(f);
-        
-        List<Opinion> opinions = new ArrayList<Opinion>();
-        List<OpinionResult> opinionResults =  template.find(tableName, scan, new RowMapper<OpinionResult>() {
+        scan.setFilter(f);*/
+
+        List<Opinion> opinions =  template.find(tableName, columnFamilyName, new RowMapper<Opinion>() {
             @Override
-            public OpinionResult mapRow(Result result, int rowNum) throws Exception {
-               
-                return resultmapper.mapFromResult(result, columnFamilyName);
+            public Opinion mapRow(Result result, int rowNum) throws Exception {
+                return mapper.mapFromResult(result, columnFamilyName);
             }
         });
-        
-        for(OpinionResult opr : opinionResults){
-            opinions.addAll(opr.getOpinions());
-        }
         
         return opinions;
     }
@@ -175,7 +192,7 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
     }
 
         @Override
-        public List<Opinion> save(final Iterable<Opinion> opinions) {
+    public List<Opinion> save(final Iterable<Opinion> opinions) {
 
             template.execute(tableName, new TableCallback<Object>() {
                 public Object doInTable(HTableInterface table) throws Throwable {
@@ -231,7 +248,36 @@ public class OpinionDaoImpl extends BasePersistence implements OpinionDao {
         
         return opinions;
     }
-    
+
+    @Override
+    public List<Opinion> findUnexpanded() {
+        Scan scan = new Scan();
+
+        byte[] columnQualifier = Bytes.toBytes("Expanded");
+
+        SingleColumnValueFilter filter = new SingleColumnValueFilter(
+                Bytes.toBytes(columnFamilyName),
+                columnQualifier,
+                CompareFilter.CompareOp.EQUAL,
+                Bytes.toBytes(0)
+        );
+        filter.setFilterIfMissing(true);
+        filter.setLatestVersionOnly(true);
+        scan.setFilter(filter);
+
+        List<Opinion> opinions = template.find(tableName, scan, new RowMapper<Opinion>() {
+
+            @Override
+            public Opinion mapRow(Result result, int rowNum) throws Exception {
+
+                return mapper.mapFromResult(result, columnFamilyName);
+            }
+        });
+
+        return opinions;
+    }
+
+
     @Override
     public Opinion find(String id) {
         Scan scan = new Scan();
