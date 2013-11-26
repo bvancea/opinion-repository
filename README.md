@@ -1,5 +1,9 @@
-Test!
+opinion-repository
+==================
 
+Opinion repository for my Bachelor research project
+
+# Running the repository
 
 To use the maven tomcat plugin, make sure you have the following configuration in place on your machine:
 
@@ -31,4 +35,4 @@ To use the maven tomcat plugin, make sure you have the following configuration i
                 </configuration>
             </plugin>	
 
-To deploy the application for the first time, run tomcat:deploy. To redeploy the application after some modifications, run tomcat:redeploy.
+To deploy the application for the first time, run tomcat:deploy. To redeploy the application after some modifications, run tomcat:redeploy
